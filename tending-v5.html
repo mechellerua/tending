@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>tending</title>
+<link href="https://fonts.googleapis.com/css2?family=Unna:ital,wght@0,400;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --cr:  #FAF9F5;
+  --cr2: #F2EFE8;
+  --cr3: #E5E1D8;
+  --pk:  #F7AABF;
+  --pk2: #F0889F;
+  --gn:  #96BA8A;
+  --gnp: #EDF4EA;
+  --ink: #1A1816;
+  --k2:  #3D3A36;
+  --k3:  #6B6560;
+  --mt:  #9A9288;
+  --bd:  rgba(26,24,22,0.08);
+  --px:  24px;
+}
+html,body{
+  min-height:100vh;background:#DEDAD2;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'DM Sans',sans-serif;
+  -webkit-font-smoothing:antialiased;
+  padding:48px 20px;
+}
+
+/* ── shell ── */
+.phone{width:393px;height:852px;border-radius:54px;background:linear-gradient(160deg,#D4D0CB,#C2BEB8,#CCCAC4,#B4B0AA);padding:3px;box-shadow:inset 0 0 0 .5px rgba(255,255,255,.4),0 40px 90px rgba(0,0,0,.26),0 10px 24px rgba(0,0,0,.12);flex-shrink:0;position:relative;}
+.phone-inner{width:100%;height:100%;border-radius:51px;background:var(--cr);overflow:hidden;display:flex;flex-direction:column;position:relative;}
+.island{position:absolute;top:13px;left:50%;transform:translateX(-50%);width:118px;height:34px;background:#0a0a0a;border-radius:20px;z-index:300;}
+.sbar{height:56px;padding:0 var(--px) 10px;display:flex;align-items:flex-end;justify-content:space-between;flex-shrink:0;position:relative;z-index:10;}
+.sbar-t{font-size:15px;font-weight:500;color:var(--ink);}
+.sbar-r{display:flex;align-items:center;gap:5px;}
+
+/* ── screens ── */
+.screen{display:none;flex:1;overflow-y:auto;overflow-x:hidden;scrollbar-width:none;}
+.screen::-webkit-scrollbar{display:none;}
+.screen.active{display:flex;flex-direction:column;}
+@keyframes up{from{opacity:0;transform:translateY(7px);}to{opacity:1;transform:translateY(0);}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+
+.pg{padding:20px var(--px) 100px;animation:up .25s ease both;}
+
+/* optical text indent — text 1px inward from card edges */
+.pg>.ey,.pg>.h1,.pg>.b1,.pg>.home-date,.pg>.sl,.pg-head{padding-left:1px;}
+
+/* ── nav ── */
+.nav{position:absolute;bottom:0;left:0;right:0;height:84px;padding:10px 4px 24px;display:flex;justify-content:space-around;align-items:flex-start;background:rgba(250,249,245,.82);backdrop-filter:blur(24px) saturate(160%);-webkit-backdrop-filter:blur(24px) saturate(160%);border-top:.5px solid rgba(255,255,255,.75);z-index:100;}
+.ni{display:flex;flex-direction:column;align-items:center;gap:4px;padding:6px 14px;border-radius:999px;border:none;background:none;cursor:pointer;color:var(--mt);transition:color .16s, transform .16s;-webkit-tap-highlight-color:transparent;}
+.ni:active{transform:scale(.92);}
+.ni.on{color:var(--ink);}
+.ni svg{width:22px;height:22px;stroke-width:1.3;fill:none;transition:transform .2s;}
+.ni.on svg{animation:navPop .3s ease;}
+@keyframes navPop{0%{transform:scale(1);}40%{transform:scale(1.18);}100%{transform:scale(1);}}
+.ni-d{width:4px;height:4px;border-radius:50%;background:transparent;transition:all .2s;}
+.ni.on .ni-d{background:var(--gn);}
+.ni-l{font-size:10px;font-weight:400;}
+
+/* ── TYPOGRAPHY ── */
+.ey{font-size:11px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--mt);margin-bottom:6px;}
+.h1{font-family:'Unna',serif;font-size:30px;font-weight:400;line-height:1.2;color:var(--ink);margin-bottom:6px;}
+.h1 em{font-style:italic;}
+.ct{font-family:'Unna',serif;font-size:17px;font-weight:400;color:var(--ink);line-height:1.3;margin-bottom:5px;}
+.ct em{font-style:italic;}
+.b1{font-size:15px;font-weight:400;color:var(--k2);line-height:1.68;}
+.b2{font-size:13px;font-weight:400;color:var(--k3);line-height:1.6;}
+.cap{font-size:12px;font-weight:400;color:var(--mt);line-height:1.5;}
+.sl{font-size:11px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--mt);margin-bottom:10px;margin-top:20px;display:block;}
+
+/* ── CARDS ── */
+.card{background:#fff;border:.5px solid var(--bd);border-radius:18px;padding:16px 18px;margin-bottom:10px;transition:transform .15s,box-shadow .15s;}
+.card-sm{padding:13px 16px;}
+.card-tap{cursor:pointer;}
+.card-tap:active{transform:scale(.98);}
+.card-tap:hover{box-shadow:0 2px 12px rgba(0,0,0,.05);}
+
+/* ── TAGS ── */
+.tag{display:inline-block;font-size:10px;font-weight:500;letter-spacing:.10em;text-transform:uppercase;padding:4px 10px;border-radius:999px;transition:transform .15s;}
+
+.tg{background:var(--gnp);color:#4A8A3E;}
+.tw{background:var(--cr2);color:var(--k3);}
+.tp{background:rgba(247,170,191,.18);color:#C0607A;}
+/* shared/private mini badges */
+.badge-shared{background:var(--gnp);color:#4A8A3E;}
+.badge-private{background:var(--cr2);color:var(--mt);}
+
+/* ── BUTTONS ── */
+.btn{font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;padding:13px 22px;border-radius:999px;border:none;cursor:pointer;transition:all .18s;-webkit-tap-highlight-color:transparent;}
+.btn:active{transform:scale(.97);}
+.bd{background:var(--ink);color:var(--cr);}
+.bd:active{background:var(--k2);}
+.bg{background:rgba(255,255,255,.65);backdrop-filter:blur(10px);color:var(--k2);border:.5px solid var(--bd);}
+.bg:active{background:var(--cr2);}
+.bfull{width:100%;text-align:center;display:block;}
+.divider{height:.5px;background:var(--bd);margin:20px 0;}
+.note{font-size:12px;font-weight:400;color:var(--mt);text-align:center;line-height:1.6;}
+.back-btn{font-family:'DM Sans',sans-serif;font-size:13px;font-weight:400;color:var(--k3);background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:4px;padding:0;margin-bottom:16px;-webkit-tap-highlight-color:transparent;transition:color .15s;}
+.back-btn svg{width:16px;height:16px;transition:transform .15s;}
+.back-btn:active{color:var(--ink);}
+.back-btn:active svg{transform:translateX(-2px);}
+
+/* page header row */
+.pg-head{display:flex;align-items:center;justify-content:space-between;}
+.notif-btn{position:relative;width:32px;height:32px;border-radius:50%;background:var(--cr2);border:.5px solid var(--bd);display:flex;align-items:center;justify-content:center;cursor:pointer;-webkit-tap-highlight-color:transparent;flex-shrink:0;transition:transform .15s,background .15s;}
+.notif-btn:active{transform:scale(.9);background:var(--cr3);}
+.notif-btn svg{width:16px;height:16px;stroke:var(--k3);fill:none;stroke-width:1.5;}
+.notif-dot{position:absolute;top:5px;right:5px;width:7px;height:7px;border-radius:50%;background:#E05C71;border:1.5px solid var(--cr2);animation:pulse 2s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.7;transform:scale(1.2);}}
+
+/* ════ HOME ════ */
+.home-date{font-size:13px;font-weight:400;color:var(--mt);margin-bottom:20px;}
+.hero{background:linear-gradient(135deg,rgba(247,170,191,.14) 0%,var(--cr) 55%);border:.5px solid rgba(247,170,191,.24);border-radius:22px;padding:20px 18px 16px;margin-bottom:10px;cursor:pointer;position:relative;overflow:hidden;transition:transform .15s,box-shadow .15s;}
+.hero:hover{box-shadow:0 4px 20px rgba(247,170,191,.15);}
+.hero:active{transform:scale(.985);}
+.hero::after{content:'';position:absolute;top:-28px;right:-28px;width:100px;height:100px;border-radius:50%;background:radial-gradient(circle,rgba(247,170,191,.24) 0%,transparent 70%);}
+.hero-h{font-family:'Unna',serif;font-size:26px;font-weight:400;line-height:1.22;color:var(--ink);margin-bottom:16px;}
+.hero-h em{font-style:italic;}
+.cta-row{display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,.6);backdrop-filter:blur(12px);border-radius:12px;padding:11px 14px;border:.5px solid rgba(255,255,255,.8);}
+
+/* reply preview card */
+.reply-preview{background:#fff;border:.5px solid rgba(247,170,191,.28);border-radius:16px;padding:14px 18px;margin-bottom:10px;cursor:pointer;transition:transform .15s,box-shadow .15s;display:flex;align-items:center;gap:12px;}
+.reply-preview:active{transform:scale(.98);}
+.reply-preview:hover{box-shadow:0 2px 12px rgba(247,170,191,.12);}
+.rp-dot{width:8px;height:8px;border-radius:50%;background:var(--pk);flex-shrink:0;animation:pulse 2s ease-in-out infinite;}
+.rp-arrow{color:var(--mt);flex-shrink:0;font-size:16px;transition:transform .15s;}
+.reply-preview:hover .rp-arrow{transform:translateX(2px);}
+
+/* locked activity card */
+.act-locked{background:var(--cr2);border:.5px solid var(--bd);border-radius:18px;padding:16px 18px;margin-bottom:10px;opacity:.55;}
+.act-locked .lock-icon{font-size:16px;margin-right:6px;}
+.act-unlocked{background:linear-gradient(135deg,var(--gnp) 0%,#fff 70%);border:.5px solid rgba(150,186,138,.3);border-radius:18px;padding:16px 18px;margin-bottom:10px;cursor:pointer;transition:transform .15s,box-shadow .15s;}
+.act-unlocked:active{transform:scale(.98);}
+.act-unlocked:hover{box-shadow:0 2px 12px rgba(150,186,138,.15);}
+
+/* ════ CHECK-IN ════ */
+.mgrid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:10px;}
+.mc{background:#fff;border:.5px solid var(--bd);border-radius:17px;padding:16px 14px;cursor:pointer;transition:all .2s;-webkit-tap-highlight-color:transparent;}
+.mc:active{transform:scale(.97);}
+.mc:hover{box-shadow:0 2px 10px rgba(0,0,0,.04);}
+.mc.on-calm{border:1.5px solid rgba(150,186,138,.6);background:rgba(150,186,138,.12);}
+.mc.on-anxious{border:1.5px solid rgba(247,170,191,.6);background:rgba(247,170,191,.09);}
+.mc.on-sad{border:1.5px solid rgba(168,180,208,.6);background:rgba(168,180,208,.12);}
+.mc.on-tired{border:1.5px solid rgba(197,185,168,.6);background:rgba(197,185,168,.12);}
+.mc.on-good{border:1.5px solid rgba(242,198,125,.6);background:rgba(242,198,125,.12);}
+.mc.on-mixed{border:1.5px solid rgba(184,178,172,.6);background:rgba(184,178,172,.12);}
+.me{font-size:22px;margin-bottom:8px;transition:transform .2s;}
+.mc:hover .me{transform:scale(1.1);}
+.mn{font-size:14px;font-weight:500;color:var(--ink);margin-bottom:3px;}
+.md{font-size:12px;font-weight:400;color:var(--k3);line-height:1.4;}
+.oi{width:100%;background:#fff;border:.5px solid var(--bd);border-radius:14px;padding:14px 16px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:400;color:var(--ink);resize:none;min-height:74px;line-height:1.65;transition:all .2s;}
+.oi::placeholder{color:var(--mt);}
+.oi:focus{outline:none;border-color:var(--gn);box-shadow:0 0 0 3px rgba(150,186,138,.12);}
+
+/* check-in steps */
+.ci-step{display:none;}
+.ci-step.active{display:block;animation:fadeUp .3s ease both;}
+
+/* ════ ACTIVITY (within check-in flow) ════ */
+.transition-msg{font-family:'Unna',serif;font-size:20px;font-style:italic;font-weight:400;color:var(--k2);line-height:1.45;margin-bottom:20px;text-align:center;padding:0 8px;}
+.act-main{background:linear-gradient(135deg,var(--gnp) 0%,#fff 70%);border:.5px solid rgba(150,186,138,.22);border-radius:20px;padding:20px 18px;margin-bottom:10px;position:relative;overflow:hidden;}
+.act-main::after{content:'';position:absolute;top:-18px;right:-18px;width:80px;height:80px;border-radius:50%;background:radial-gradient(circle,rgba(150,186,138,.2) 0%,transparent 70%);}
+.act-info{font-size:13px;font-weight:400;color:var(--k3);line-height:1.6;margin-bottom:10px;padding-left:1px;}
+.act-info em{color:var(--k2);font-style:normal;font-weight:500;}
+.abn{font-family:'Unna',serif;font-size:52px;font-weight:400;line-height:1;color:var(--ink);}
+.abu{font-size:12px;font-weight:400;color:var(--k3);margin-top:3px;}
+.steps{display:flex;flex-direction:column;gap:12px;}
+.step{display:flex;align-items:flex-start;gap:12px;font-size:14px;font-weight:400;line-height:1.6;color:var(--k2);}
+.sn{width:22px;height:22px;border-radius:50%;flex-shrink:0;background:var(--gnp);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;color:#4A8A3E;margin-top:1px;}
+
+/* alt activities */
+.alt-row{display:flex;gap:8px;margin-bottom:10px;}
+.alt-card{flex:1;background:#fff;border:.5px solid var(--bd);border-radius:14px;padding:12px 10px;text-align:center;cursor:pointer;transition:all .2s;}
+.alt-card:active{transform:scale(.96);}
+.alt-card:hover{border-color:rgba(150,186,138,.4);box-shadow:0 2px 10px rgba(0,0,0,.04);}
+.alt-emoji{font-size:20px;margin-bottom:6px;transition:transform .2s;}
+.alt-card:hover .alt-emoji{transform:scale(1.12) rotate(-3deg);}
+.alt-name{font-size:12px;font-weight:500;color:var(--ink);margin-bottom:2px;line-height:1.3;}
+.alt-dur{font-size:10px;font-weight:400;color:var(--mt);}
+.refresh-row{display:flex;justify-content:center;margin-bottom:10px;}
+.refresh-btn{font-family:'DM Sans',sans-serif;font-size:12px;font-weight:400;color:var(--mt);background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:5px;padding:6px 12px;border-radius:999px;transition:all .2s;}
+.refresh-btn:hover{color:var(--k3);background:var(--cr2);}
+.refresh-btn:active{transform:scale(.95);}
+.refresh-btn svg{width:14px;height:14px;transition:transform .3s;}
+.refresh-btn:active svg{transform:rotate(-180deg);}
+
+/* next prompt */
+.next-prompt{text-align:center;margin-top:10px;}
+.next-prompt p{font-family:'Unna',serif;font-size:17px;font-style:italic;color:var(--k2);margin-bottom:14px;}
+
+/* ════ WRITE ════ */
+.wb{width:100%;background:#fff;border:.5px solid var(--bd);border-radius:18px;padding:16px 18px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:400;color:var(--ink);resize:none;min-height:170px;line-height:1.72;transition:all .2s;margin-bottom:10px;}
+.wb::placeholder{color:var(--mt);}
+.wb:focus{outline:none;border-color:var(--gn);box-shadow:0 0 0 3px rgba(150,186,138,.12);}
+.tpills{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:16px;}
+.tpl{font-size:13px;font-weight:400;padding:8px 14px;border-radius:999px;border:.5px solid var(--bd);background:#fff;cursor:pointer;color:var(--k3);transition:all .18s;-webkit-tap-highlight-color:transparent;}
+.tpl:active{transform:scale(.95);}
+.tpl.on{background:var(--gnp);border-color:rgba(150,186,138,.5);color:#4A8A3E;}
+.dgrid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:16px;}
+.dc{border:.5px solid var(--bd);border-radius:17px;padding:16px 13px;text-align:center;cursor:pointer;background:#fff;transition:all .2s;-webkit-tap-highlight-color:transparent;}
+.dc:active{transform:scale(.97);}
+.dc.on{border:1.5px solid rgba(150,186,138,.55);background:var(--gnp);}
+.di{font-size:22px;margin-bottom:6px;transition:transform .2s;}
+.dc:hover .di{transform:scale(1.08);}
+.dn{font-size:14px;font-weight:500;color:var(--ink);margin-bottom:3px;}
+.dd{font-size:12px;font-weight:400;color:var(--k3);line-height:1.4;}
+.rgrid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:16px;}
+.rp-choice{font-size:13px;font-weight:400;padding:11px 9px;border-radius:12px;border:.5px solid var(--bd);background:#fff;cursor:pointer;color:var(--k3);text-align:center;line-height:1.4;transition:all .18s;}
+.rp-choice:active{transform:scale(.96);}
+.rp-choice.on{background:var(--gnp);border-color:rgba(150,186,138,.5);color:#4A8A3E;}
+
+/* save confirmation toast */
+@keyframes toastIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+@keyframes toastOut{from{opacity:1;transform:translateY(0);}to{opacity:0;transform:translateY(-6px);}}
+.toast{position:fixed;bottom:110px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--cr);font-size:13px;font-weight:500;padding:10px 20px;border-radius:999px;z-index:999;animation:toastIn .25s ease both;pointer-events:none;}
+.toast.out{animation:toastOut .2s ease both;}
+
+/* ════ COMMUNITY ════ */
+.fcard{background:#fff;border:.5px solid var(--bd);border-radius:18px;overflow:hidden;margin-bottom:10px;transition:box-shadow .15s;}
+.fcard:hover{box-shadow:0 2px 12px rgba(0,0,0,.04);}
+.fc-top{padding:16px 18px 12px;}
+.fc-meta{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.fc-want{font-size:12px;font-weight:400;color:var(--k3);display:flex;align-items:center;gap:5px;}
+.want-pip{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.fc-title{font-size:15px;font-weight:500;color:var(--ink);margin-bottom:8px;line-height:1.4;}
+.fc-body{font-size:14px;font-weight:400;color:var(--k2);line-height:1.68;overflow:hidden;transition:max-height .3s ease;}
+.fc-body.collapsed{max-height:42px;-webkit-mask-image:linear-gradient(to bottom,black 40%,transparent 100%);mask-image:linear-gradient(to bottom,black 40%,transparent 100%);}
+.fc-body.expanded{max-height:400px;-webkit-mask-image:none;mask-image:none;}
+.exp-btn{font-size:12px;font-weight:500;color:var(--gn);cursor:pointer;padding:4px 0;display:inline-block;margin-top:6px;-webkit-tap-highlight-color:transparent;transition:color .15s;}
+.exp-btn:hover{color:#6B9A5E;}
+/* reply bar — slimmer, send flush inside pill */
+.reply-bar{display:flex;align-items:center;border-top:.5px solid var(--bd);padding:7px 14px;gap:8px;}
+.reply-pill{flex:1;display:flex;align-items:center;background:var(--cr2);border-radius:999px;padding:0 4px 0 14px;min-height:34px;}
+.ri{flex:1;border:none;background:transparent;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:400;color:var(--ink);resize:none;height:34px;line-height:34px;outline:none;}
+.ri::placeholder{color:var(--mt);}
+.send-btn{font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;padding:0 12px;height:26px;border-radius:999px;background:var(--gn);color:#fff;border:none;cursor:pointer;white-space:nowrap;flex-shrink:0;-webkit-tap-highlight-color:transparent;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+.send-btn:active{background:#7FA872;transform:scale(.95);}
+.more-btn{width:30px;height:30px;border-radius:50%;flex-shrink:0;background:var(--cr2);border:.5px solid var(--bd);cursor:pointer;display:flex;align-items:center;justify-content:center;position:relative;-webkit-tap-highlight-color:transparent;transition:all .15s;}
+.more-btn:active{transform:scale(.9);background:var(--cr3);}
+.more-btn svg{width:14px;height:14px;fill:var(--k3);}
+.more-menu{position:absolute;right:0;bottom:36px;background:#fff;border:.5px solid var(--bd);border-radius:14px;padding:5px 0;min-width:180px;z-index:50;box-shadow:0 6px 24px rgba(0,0,0,.10);display:none;animation:fadeUp .15s ease;}
+.more-menu.open{display:block;}
+.mm-i{font-size:13px;font-weight:400;color:var(--k2);padding:11px 16px;cursor:pointer;transition:background .14s;white-space:nowrap;}
+.mm-i:hover{background:var(--cr2);}
+.mm-i.red{color:#C0404A;}
+
+/* ════ MY SPACE ════ */
+.identity{display:flex;align-items:center;gap:14px;margin-bottom:16px;}
+.id-avatar{width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#E8D5F0,#D4C5E0);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;}
+.id-name{font-family:'Unna',serif;font-size:22px;font-weight:400;color:var(--ink);line-height:1.2;}
+.id-sub{font-size:12px;font-weight:400;color:var(--mt);margin-top:2px;}
+
+.streak{background:var(--cr2);border-radius:20px;padding:20px 18px;display:flex;align-items:center;gap:16px;margin-bottom:10px;position:relative;overflow:hidden;}
+.streak::after{content:'';position:absolute;top:-24px;right:-20px;width:90px;height:90px;border-radius:50%;background:radial-gradient(circle,rgba(247,170,191,.22) 0%,transparent 70%);}
+.sn2{font-family:'Unna',serif;font-size:56px;font-weight:400;line-height:1;color:var(--ink);flex-shrink:0;}
+.st{font-family:'Unna',serif;font-size:17px;font-weight:400;color:var(--ink);margin-bottom:4px;}
+.ss{font-size:13px;font-weight:400;color:var(--k3);line-height:1.5;}
+.week{background:#fff;border:.5px solid var(--bd);border-radius:17px;padding:14px 14px;display:flex;justify-content:space-between;margin-bottom:10px;}
+.wdy{display:flex;flex-direction:column;align-items:center;gap:5px;}
+.wd{width:34px;height:34px;border-radius:50%;border:.5px solid var(--bd);background:var(--cr);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;color:var(--mt);transition:transform .15s;}
+.wd:hover{transform:scale(1.08);}
+.wd.m-calm{background:rgba(150,186,138,.22);border-color:rgba(150,186,138,.5);color:var(--k2);}
+.wd.m-anxious{background:rgba(247,170,191,.22);border-color:rgba(247,170,191,.5);color:var(--k2);}
+.wd.m-sad{background:rgba(168,180,208,.22);border-color:rgba(168,180,208,.5);color:var(--k2);}
+.wd.m-tired{background:rgba(197,185,168,.22);border-color:rgba(197,185,168,.5);color:var(--k2);}
+.wd.m-good{background:rgba(242,198,125,.22);border-color:rgba(242,198,125,.5);color:var(--k2);}
+.wd.m-mixed{background:rgba(184,178,172,.22);border-color:rgba(184,178,172,.5);color:var(--k2);}
+.wl{font-size:9px;font-weight:400;color:var(--mt);}
+.wl.today{font-weight:700;color:var(--ink);}
+
+.me-tabs{display:flex;gap:0;background:var(--cr2);border-radius:12px;padding:3px;margin-bottom:14px;}
+.me-tab{flex:1;font-size:11px;font-weight:400;color:var(--k3);padding:8px 4px;border-radius:10px;text-align:center;cursor:pointer;transition:all .2s;border:none;background:none;font-family:'DM Sans',sans-serif;}
+.me-tab.on{background:#fff;color:var(--ink);font-weight:500;box-shadow:0 1px 4px rgba(0,0,0,.07);}
+.rcard{background:#fff;border:.5px solid var(--bd);border-radius:15px;padding:14px 18px;margin-bottom:10px;}
+.rcard-meta{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.rcard-post{font-size:13px;font-weight:400;color:var(--k3);line-height:1.55;margin-bottom:8px;padding-bottom:8px;border-bottom:.5px solid var(--bd);}
+.rcard-reply{font-size:14px;font-weight:400;color:var(--ink);line-height:1.6;}
+.jc{background:#fff;border:.5px solid var(--bd);border-radius:15px;padding:14px 18px;margin-bottom:10px;cursor:pointer;transition:transform .15s,box-shadow .15s;}
+.jc:active{transform:scale(.98);}
+.jc:hover{box-shadow:0 2px 10px rgba(0,0,0,.04);}
+.jd{font-size:11px;font-weight:500;letter-spacing:.10em;text-transform:uppercase;color:var(--mt);margin-bottom:5px;}
+.jp{font-family:'Unna',serif;font-size:15px;font-style:italic;color:var(--k2);line-height:1.55;}
+.jc-badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:500;margin-top:8px;padding:3px 9px;border-radius:999px;}
+.me-panel{display:none;}
+.me-panel.on{display:block;animation:fadeUp .2s ease both;}
+</style>
+</head>
+<body>
+<div class="phone">
+<div class="phone-inner">
+<div class="island"></div>
+
+<!-- status bar -->
+<div class="sbar">
+  <span class="sbar-t">9:41</span>
+  <div class="sbar-r">
+    <svg width="17" height="12" viewBox="0 0 17 12" fill="var(--ink)"><rect x="0" y="7" width="3" height="5" rx=".5"/><rect x="4.5" y="4.5" width="3" height="7.5" rx=".5"/><rect x="9" y="2" width="3" height="10" rx=".5"/><rect x="13.5" y="0" width="3" height="12" rx=".5"/></svg>
+    <svg width="16" height="12" viewBox="0 0 16 12" fill="none" stroke="var(--ink)" stroke-width="1.4" stroke-linecap="round"><path d="M1 4C3.8 1.4 6 0 8 0s4.2 1.4 7 4"/><path d="M3.2 6.8C5 5 6.5 4.2 8 4.2s3 .8 4.8 2.6"/><circle cx="8" cy="11" r="1.3" fill="var(--ink)" stroke="none"/></svg>
+    <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x=".5" y=".5" width="21" height="11" rx="3.5" stroke="var(--ink)" stroke-opacity=".3"/><rect x="2" y="2" width="16" height="8" rx="2" fill="var(--ink)"/><path d="M23 4v4a2 2 0 000-4z" fill="var(--ink)" fill-opacity=".4"/></svg>
+  </div>
+</div>
+
+<!-- ══ HOME ══ -->
+<div class="screen active" id="s-home">
+<div class="pg">
+  <p class="home-date">Tuesday, March 18</p>
+
+  <div class="hero" onclick="navigate('checkin')">
+    <p class="hero-h">Good morning —<br><em>how are you today?</em></p>
+    <div class="cta-row">
+      <span class="b2">
+        <span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--pk);margin-right:6px;vertical-align:middle;"></span>
+        Check-in waiting
+      </span>
+      <button class="btn bd" style="font-size:13px;padding:9px 18px;">Begin →</button>
+    </div>
+  </div>
+
+  <span class="sl">Today's activity</span>
+  <div class="act-locked" id="home-act-locked">
+    <p style="font-size:14px;font-weight:500;color:var(--k3);margin-bottom:4px;"><span class="lock-icon">🔒</span> Complete check-in to unlock</p>
+    <p class="b2">Your activity will be personalized based on how you're feeling.</p>
+  </div>
+  <div class="act-unlocked" id="home-act-unlocked" style="display:none;" onclick="navigate('checkin');showStep(2)">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;">
+      <div style="flex:1;">
+        <span class="tag tg" style="margin-bottom:10px;display:inline-block;">Breathing · 3 min</span>
+        <p class="ct" style="margin-bottom:4px;">4-7-8 breath</p>
+        <p class="b2">Matched to how you're feeling today.</p>
+      </div>
+      <span style="font-family:'Unna',serif;font-size:40px;font-weight:400;color:var(--ink);line-height:1;flex-shrink:0;margin-top:4px;">3</span>
+    </div>
+  </div>
+
+  <span class="sl">From the community</span>
+  <div class="card card-tap" onclick="navigate('community')">
+    <p style="font-family:'Unna',serif;font-size:15px;font-style:italic;color:var(--ink);line-height:1.6;margin-bottom:8px;">"I finally told my friend how I was feeling and it went better than I expected…"</p>
+    <p class="b2">Someone could use a few kind words.</p>
+  </div>
+
+  <div class="reply-preview" onclick="navigate('myspace');mt(document.querySelector('#p-received-tab'),'p-received')">
+    <div class="rp-dot"></div>
+    <div style="flex:1;">
+      <p style="font-size:14px;font-weight:500;color:var(--ink);margin-bottom:2px;">You received 2 new replies</p>
+      <p class="b2">"I've been there. The trick that helped me was…"</p>
+    </div>
+    <span class="rp-arrow">›</span>
+  </div>
+</div>
+</div>
+
+<!-- ══ CHECK-IN ══ -->
+<div class="screen" id="s-checkin">
+<div class="pg">
+  <div class="ci-step active" id="ci-step1">
+    <p class="ey">Daily check-in</p>
+    <p class="h1" style="margin-bottom:14px;">How are you today?</p>
+    <div class="mgrid">
+      <div class="mc" onclick="sm(this,'calm')"><div class="me">🌿</div><p class="mn">Calm & okay</p><p class="md">Steady, nothing intense</p></div>
+      <div class="mc" onclick="sm(this,'anxious')"><div class="me">🌀</div><p class="mn">A bit anxious</p><p class="md">Heart's a little fast</p></div>
+      <div class="mc" onclick="sm(this,'sad')"><div class="me">🌧</div><p class="mn">Low or sad</p><p class="md">Heavy, hard to explain</p></div>
+      <div class="mc" onclick="sm(this,'tired')"><div class="me">🍃</div><p class="mn">Tired & numb</p><p class="md">Just want to exist</p></div>
+      <div class="mc" onclick="sm(this,'good')"><div class="me">☀️</div><p class="mn">Good & light</p><p class="md">Something's going right</p></div>
+      <div class="mc" onclick="sm(this,'mixed')"><div class="me">🌫</div><p class="mn">Hard to say</p><p class="md">Mixed, complicated</p></div>
+    </div>
+    <span class="sl">Anything to add? <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:11px;">(optional)</span></span>
+    <textarea class="oi" placeholder="A word or two, or nothing at all."></textarea>
+    <div class="divider"></div>
+    <button class="btn bd bfull" onclick="completeCheckin()">Continue →</button>
+    <p class="note" style="margin-top:10px;">Only you can see this.</p>
+  </div>
+
+  <div class="ci-step" id="ci-step2">
+    <button class="back-btn" onclick="showStep(1)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+      Back to check-in
+    </button>
+    <p class="transition-msg">We hear you.<br>Here's something that might help.</p>
+    <div class="act-main">
+      <span class="tag tg" style="margin-bottom:14px;display:inline-block;">Breathing · calm</span>
+      <p class="ct" style="font-size:22px;margin-bottom:4px;position:relative;z-index:1;">4-7-8 breath</p>
+      <p class="b2" style="margin-bottom:14px;position:relative;z-index:1;">A slow breath pattern to calm your nervous system.</p>
+      <div style="display:flex;align-items:baseline;gap:6px;position:relative;z-index:1;">
+        <div class="abn">3</div>
+        <div class="abu">minutes</div>
+      </div>
+    </div>
+    <p class="act-info"><em>Why this?</em> Breathing exercises help lower heart rate when you're feeling on edge. This one is gentle enough for any moment.</p>
+    <div class="card" style="margin-top:0;">
+      <div class="steps">
+        <div class="step"><span class="sn">1</span><span>In through your nose for <strong>4 counts</strong>.</span></div>
+        <div class="step"><span class="sn">2</span><span>Hold, gently, for <strong>7 counts</strong>.</span></div>
+        <div class="step"><span class="sn">3</span><span>Out through your mouth for <strong>8 counts</strong>.</span></div>
+        <div class="step"><span class="sn">4</span><span>Repeat 3 times. Done.</span></div>
+      </div>
+    </div>
+    <span class="sl">Or try one of these</span>
+    <div class="alt-row">
+      <div class="alt-card"><div class="alt-emoji">🖐</div><p class="alt-name">5-senses grounding</p><p class="alt-dur">5 min</p></div>
+      <div class="alt-card"><div class="alt-emoji">💭</div><p class="alt-name">One small question</p><p class="alt-dur">2 min</p></div>
+      <div class="alt-card"><div class="alt-emoji">🚶</div><p class="alt-name">Gentle walk</p><p class="alt-dur">10 min</p></div>
+    </div>
+    <div class="refresh-row">
+      <button class="refresh-btn" onclick="this.querySelector('svg').style.transform='rotate(-180deg)';setTimeout(()=>this.querySelector('svg').style.transform='',300)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 105.64-11.36L1 10"/></svg>
+        Show different options
+      </button>
+    </div>
+    <div class="divider"></div>
+    <div class="next-prompt">
+      <p>What would you like to do next?</p>
+      <div style="display:flex;gap:8px;">
+        <button class="btn bg" style="flex:1;" onclick="navigate('write')">Write something</button>
+        <button class="btn bd" style="flex:1;" onclick="navigate('community')">Browse community</button>
+      </div>
+      <p class="note" style="margin-top:14px;">Or just close the app. That's okay too.</p>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ══ WRITE ══ -->
+<div class="screen" id="s-write">
+<div class="pg">
+  <p class="ey">Write</p>
+  <p class="h1" style="margin-bottom:6px;">What's on your mind?</p>
+  <p class="b2" style="margin-bottom:14px;">No format, no rules. Decide what to do with it after.</p>
+
+  <textarea class="wb" id="write-input" placeholder="Get it out of your head…"></textarea>
+
+  <span class="sl">Topic <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:11px;">(optional)</span></span>
+  <div class="tpills">
+    <span class="tpl" onclick="this.classList.toggle('on')">relationships</span>
+    <span class="tpl" onclick="this.classList.toggle('on')">school & work</span>
+    <span class="tpl" onclick="this.classList.toggle('on')">my body</span>
+    <span class="tpl" onclick="this.classList.toggle('on')">big feelings</span>
+    <span class="tpl" onclick="this.classList.toggle('on')">not sure</span>
+    <span class="tpl" onclick="this.classList.toggle('on')">+ my own</span>
+  </div>
+
+  <div class="divider"></div>
+  <span class="sl" style="margin-top:0;">Where should this go?</span>
+  <div class="dgrid">
+    <div class="dc on" id="dc-private" onclick="sd(this,'private')"><div class="di">🔒</div><p class="dn">Keep private</p><p class="dd">Saved as your journal</p></div>
+    <div class="dc" id="dc-share" onclick="sd(this,'share')"><div class="di">🌱</div><p class="dn">Share anonymously</p><p class="dd">Posted to community</p></div>
+  </div>
+
+  <div id="rsec" style="display:none;">
+    <span class="sl">What kind of response?</span>
+    <div class="rgrid">
+      <div class="rp-choice" onclick="this.classList.toggle('on')">Just be heard</div>
+      <div class="rp-choice" onclick="this.classList.toggle('on')">Encouragement</div>
+      <div class="rp-choice" onclick="this.classList.toggle('on')">Some advice</div>
+      <div class="rp-choice" onclick="this.classList.toggle('on')">Figure it out together</div>
+    </div>
+  </div>
+
+  <button class="btn bd bfull" onclick="saveWrite()">Save & continue →</button>
+  <p class="note" style="margin-top:10px;">You can delete this any time.</p>
+</div>
+</div>
+
+<!-- ══ COMMUNITY ══ -->
+<div class="screen" id="s-community">
+<div class="pg">
+  <div class="pg-head">
+    <p class="ey" style="margin-bottom:0;">Community</p>
+    <div class="notif-btn" onclick="navigate('myspace');mt(document.querySelector('#p-received-tab'),'p-received')">
+      <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+      <div class="notif-dot"></div>
+    </div>
+  </div>
+  <p class="h1" style="margin-bottom:14px;"><em>Real moments,</em><br>anonymous voices.</p>
+
+  <div class="fcard">
+    <div class="fc-top">
+      <div class="fc-meta">
+        <span class="tag tw">big feelings</span>
+        <span class="fc-want"><span class="want-pip" style="background:var(--pk);"></span>wants encouragement</span>
+      </div>
+      <p class="fc-title">Finding it hard to be honest about how I'm doing</p>
+      <div class="fc-body collapsed" id="fc1b">I've been putting on a brave face for so long. With friends, family, everyone. It feels exhausting to keep up but I don't really know how to stop. Like if I'm honest, what happens next?</div>
+      <span class="exp-btn" id="fc1e" onclick="te('fc1')">Read more</span>
+    </div>
+    <div class="reply-bar">
+      <div class="reply-pill"><textarea class="ri" placeholder="Say something…"></textarea><button class="send-btn">Send</button></div>
+      <div class="more-btn" onclick="tm('m1')">
+        <svg viewBox="0 0 16 16"><circle cx="8" cy="3" r="1.5"/><circle cx="8" cy="8" r="1.5"/><circle cx="8" cy="13" r="1.5"/></svg>
+        <div class="more-menu" id="m1"><div class="mm-i" onclick="cm('m1')">Not for me right now</div><div class="mm-i" onclick="cm('m1')">Not interested</div><div class="mm-i red" onclick="cm('m1')">This makes me uncomfortable</div><div class="mm-i red" onclick="cm('m1')">Report</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="fcard">
+    <div class="fc-top">
+      <div class="fc-meta">
+        <span class="tag tw">school & work</span>
+        <span class="fc-want"><span class="want-pip" style="background:var(--gn);"></span>wants advice</span>
+      </div>
+      <p class="fc-title">Keep starting things and never finishing</p>
+      <div class="fc-body collapsed" id="fc2b">My to-do list is a graveyard. I start tasks with good intentions and then completely lose momentum halfway through. I don't know if it's focus, motivation, or something else entirely.</div>
+      <span class="exp-btn" id="fc2e" onclick="te('fc2')">Read more</span>
+    </div>
+    <div class="reply-bar">
+      <div class="reply-pill"><textarea class="ri" placeholder="Share what's worked for you…"></textarea><button class="send-btn">Send</button></div>
+      <div class="more-btn" onclick="tm('m2')">
+        <svg viewBox="0 0 16 16"><circle cx="8" cy="3" r="1.5"/><circle cx="8" cy="8" r="1.5"/><circle cx="8" cy="13" r="1.5"/></svg>
+        <div class="more-menu" id="m2"><div class="mm-i" onclick="cm('m2')">Not for me right now</div><div class="mm-i" onclick="cm('m2')">Not interested</div><div class="mm-i red" onclick="cm('m2')">This makes me uncomfortable</div><div class="mm-i red" onclick="cm('m2')">Report</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="fcard">
+    <div class="fc-top">
+      <div class="fc-meta">
+        <span class="tag tw">relationships</span>
+        <span class="fc-want"><span class="want-pip" style="background:var(--mt);"></span>just wants to be heard</span>
+      </div>
+      <p class="fc-title">Said something vulnerable and got ignored</p>
+      <div class="fc-body collapsed" id="fc3b">Told a close friend something I'd been holding in for a while. She just changed the subject. I know she probably didn't mean anything by it but it stung more than I expected.</div>
+      <span class="exp-btn" id="fc3e" onclick="te('fc3')">Read more</span>
+    </div>
+    <div class="reply-bar">
+      <div class="reply-pill"><textarea class="ri" placeholder="Respond…"></textarea><button class="send-btn">Send</button></div>
+      <div class="more-btn" onclick="tm('m3')">
+        <svg viewBox="0 0 16 16"><circle cx="8" cy="3" r="1.5"/><circle cx="8" cy="8" r="1.5"/><circle cx="8" cy="13" r="1.5"/></svg>
+        <div class="more-menu" id="m3"><div class="mm-i" onclick="cm('m3')">Not for me right now</div><div class="mm-i" onclick="cm('m3')">Not interested</div><div class="mm-i red" onclick="cm('m3')">This makes me uncomfortable</div><div class="mm-i red" onclick="cm('m3')">Report</div></div>
+      </div>
+    </div>
+  </div>
+
+  <p class="note">All posts and replies are anonymous.</p>
+</div>
+</div>
+
+<!-- ══ MY SPACE ══ -->
+<div class="screen" id="s-myspace">
+<div class="pg">
+  <p class="ey">My space</p>
+
+  <div class="identity">
+    <div class="id-avatar">🌿</div>
+    <div>
+      <p class="id-name">Lavender Fern</p>
+      <p class="id-sub">Your anonymous identity</p>
+    </div>
+  </div>
+
+  <div class="streak">
+    <span class="sn2">7</span>
+    <div><p class="st">days in a row</p><p class="ss">You checked in every day this week.</p></div>
+  </div>
+
+  <div class="week">
+    <div class="wdy"><div class="wd m-anxious">M</div><span class="wl">Mon</span></div>
+    <div class="wdy"><div class="wd m-calm">T</div><span class="wl">Tue</span></div>
+    <div class="wdy"><div class="wd m-sad">W</div><span class="wl">Wed</span></div>
+    <div class="wdy"><div class="wd m-good">T</div><span class="wl">Thu</span></div>
+    <div class="wdy"><div class="wd m-tired">F</div><span class="wl">Fri</span></div>
+    <div class="wdy"><div class="wd m-calm">S</div><span class="wl">Sat</span></div>
+    <div class="wdy"><div class="wd m-anxious">S</div><span class="wl today">Today</span></div>
+  </div>
+
+  <div class="me-tabs" style="margin-top:16px;">
+    <button class="me-tab on" onclick="mt(this,'p-posts')">My minds</button>
+    <button class="me-tab" id="p-received-tab" onclick="mt(this,'p-received')">Replies received</button>
+    <button class="me-tab" onclick="mt(this,'p-sent')">Replies sent</button>
+  </div>
+
+  <!-- My minds -->
+  <div class="me-panel on" id="p-posts">
+    <div class="jc">
+      <p class="jd">Sunday, March 16</p>
+      <p class="jp">"Finding it hard to be honest about how I'm doing…"</p>
+      <span class="jc-badge badge-shared">🌱 Shared · 2 replies</span>
+    </div>
+    <div class="jc">
+      <p class="jd">Sunday, March 10</p>
+      <p class="jp">"Felt overwhelmed but the breathing actually helped a little. Surprised me."</p>
+      <span class="jc-badge badge-private">🔒 Private journal</span>
+    </div>
+    <div class="jc">
+      <p class="jd">Friday, March 8</p>
+      <p class="jp">"Hard to say why but today felt lighter. Maybe the conversation helped."</p>
+      <span class="jc-badge badge-private">🔒 Private journal</span>
+    </div>
+    <div class="jc">
+      <p class="jd">Wednesday, March 6</p>
+      <p class="jp">"Didn't want to do anything today. Did the 5-senses exercise anyway. Kind of helped."</p>
+      <span class="jc-badge badge-shared">🌱 Shared · 1 reply</span>
+    </div>
+  </div>
+
+  <!-- Replies received -->
+  <div class="me-panel" id="p-received">
+    <div class="rcard">
+      <div class="rcard-meta"><span class="tag tp">your post</span><span class="cap">March 15</span></div>
+      <p class="rcard-post">"Keep starting things and never finishing…"</p>
+      <p class="rcard-reply" style="color:var(--gn);font-weight:500;margin-bottom:6px;">2 replies</p>
+      <p class="rcard-reply">"I've been there. The trick that helped me was just committing to 5 minutes, not the whole thing."</p>
+    </div>
+    <div class="rcard">
+      <div class="rcard-meta"><span class="tag tp">your post</span><span class="cap">March 12</span></div>
+      <p class="rcard-post">"Feeling really stuck in my head this week…"</p>
+      <p class="rcard-reply" style="color:var(--gn);font-weight:500;margin-bottom:6px;">1 reply</p>
+      <p class="rcard-reply">"Same. It passes. You're not alone in it."</p>
+    </div>
+  </div>
+
+  <!-- Replies sent -->
+  <div class="me-panel" id="p-sent">
+    <div class="rcard">
+      <div class="rcard-meta"><span class="tag tw">big feelings</span><span class="cap">March 16</span></div>
+      <p class="rcard-post">"Finding it hard to be honest about how I'm doing…"</p>
+      <p class="rcard-reply">You replied: "I think a lot of people feel this way — it's hard to know when it's safe to let your guard down. The fact that you named it is already something."</p>
+    </div>
+    <div class="rcard">
+      <div class="rcard-meta"><span class="tag tw">relationships</span><span class="cap">March 14</span></div>
+      <p class="rcard-post">"Said something vulnerable and got ignored…"</p>
+      <p class="rcard-reply">You replied: "That kind of thing lingers. It makes sense that it hurt."</p>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+  <p class="note">tending doesn't share your data or show you ads.</p>
+  <div style="height:8px;"></div>
+</div>
+</div>
+
+<!-- ══ NAV ══ -->
+<nav class="nav">
+  <button class="ni on" id="nav-home" onclick="navigate('home')"><svg viewBox="0 0 24 24" stroke="currentColor"><path d="M3 12L12 4l9 8"/><path d="M5 10v10a1 1 0 001 1h4v-5h4v5h4a1 1 0 001-1V10"/></svg><div class="ni-d"></div><span class="ni-l">Home</span></button>
+  <button class="ni" id="nav-write" onclick="navigate('write')"><svg viewBox="0 0 24 24" stroke="currentColor"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg><div class="ni-d"></div><span class="ni-l">Write</span></button>
+  <button class="ni" id="nav-community" onclick="navigate('community')"><svg viewBox="0 0 24 24" stroke="currentColor"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg><div class="ni-d"></div><span class="ni-l">Community</span></button>
+  <button class="ni" id="nav-myspace" onclick="navigate('myspace')"><svg viewBox="0 0 24 24" stroke="currentColor"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><div class="ni-d"></div><span class="ni-l">My space</span></button>
+</nav>
+
+</div></div>
+
+<script>
+const navMap = {home:'home', checkin:'home', write:'write', community:'community', myspace:'myspace'};
+const screens = ['home','checkin','write','community','myspace'];
+let checkedIn = false;
+let writeMode = 'private';
+
+function navigate(p) {
+  screens.forEach(s => {
+    const el = document.getElementById('s-'+s);
+    if (el) el.classList.remove('active');
+  });
+  const el = document.getElementById('s-'+p);
+  if (el) el.classList.add('active');
+  document.querySelectorAll('.ni').forEach(n => n.classList.remove('on'));
+  const navId = navMap[p] || p;
+  const navEl = document.getElementById('nav-'+navId);
+  if (navEl) navEl.classList.add('on');
+  if (p === 'checkin' && !checkedIn) showStep(1);
+}
+
+function showStep(n) {
+  document.querySelectorAll('.ci-step').forEach(s => s.classList.remove('active'));
+  const step = document.getElementById('ci-step'+n);
+  if (step) step.classList.add('active');
+}
+
+function completeCheckin() {
+  checkedIn = true;
+  showStep(2);
+  document.getElementById('home-act-locked').style.display = 'none';
+  document.getElementById('home-act-unlocked').style.display = 'block';
+}
+
+function sm(c, mood) {
+  document.querySelectorAll('.mc').forEach(x => {
+    x.classList.remove('on-calm','on-anxious','on-sad','on-tired','on-good','on-mixed');
+  });
+  c.classList.add('on-' + mood);
+}
+
+function sd(c, t) {
+  writeMode = t;
+  document.querySelectorAll('.dc').forEach(x => x.classList.remove('on'));
+  c.classList.add('on');
+  document.getElementById('rsec').style.display = t === 'share' ? 'block' : 'none';
+}
+
+function saveWrite() {
+  const input = document.getElementById('write-input');
+  const text = input.value.trim();
+  if (!text) { navigate('community'); return; }
+
+  const panel = document.getElementById('p-posts');
+  const today = new Date();
+  const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const dateStr = days[today.getDay()] + ', ' + months[today.getMonth()] + ' ' + today.getDate();
+  const preview = text.length > 80 ? text.slice(0,80) + '…' : text;
+  const isShared = writeMode === 'share';
+  const badgeClass = isShared ? 'badge-shared' : 'badge-private';
+  const badgeText = isShared ? '🌱 Shared' : '🔒 Private journal';
+
+  const card = document.createElement('div');
+  card.className = 'jc';
+  card.style.animation = 'fadeUp .3s ease both';
+  card.innerHTML = '<p class="jd">' + dateStr + '</p><p class="jp">"' + preview + '"</p><span class="jc-badge ' + badgeClass + '">' + badgeText + '</span>';
+  panel.insertBefore(card, panel.firstChild);
+
+  input.value = '';
+  document.querySelectorAll('.tpl').forEach(t => t.classList.remove('on'));
+  document.querySelectorAll('.rp-choice').forEach(r => r.classList.remove('on'));
+  document.getElementById('dc-private').classList.add('on');
+  document.getElementById('dc-share').classList.remove('on');
+  document.getElementById('rsec').style.display = 'none';
+  writeMode = 'private';
+
+  showToast(isShared ? 'Shared to community' : 'Saved to your journal');
+  navigate('community');
+}
+
+function showToast(msg) {
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.textContent = msg;
+  document.querySelector('.phone-inner').appendChild(t);
+  setTimeout(() => { t.classList.add('out'); }, 1800);
+  setTimeout(() => { t.remove(); }, 2100);
+}
+
+function te(id) {
+  const b = document.getElementById(id+'b'), btn = document.getElementById(id+'e');
+  const ex = b.classList.contains('expanded');
+  b.classList.toggle('collapsed', ex);
+  b.classList.toggle('expanded', !ex);
+  btn.textContent = ex ? 'Read more' : 'Show less';
+}
+
+function tm(id) {
+  document.querySelectorAll('.more-menu').forEach(m => { if (m.id !== id) m.classList.remove('open'); });
+  document.getElementById(id).classList.toggle('open');
+}
+function cm(id) { document.getElementById(id).classList.remove('open'); }
+document.addEventListener('click', e => {
+  if (!e.target.closest('.more-btn')) document.querySelectorAll('.more-menu').forEach(m => m.classList.remove('open'));
+});
+
+function mt(tab, panel) {
+  document.querySelectorAll('.me-tab').forEach(t => t.classList.remove('on'));
+  document.querySelectorAll('.me-panel').forEach(p => p.classList.remove('on'));
+  tab.classList.add('on');
+  document.getElementById(panel).classList.add('on');
+}
+</script>
+</body>
+</html>
